@@ -23,11 +23,16 @@ After every user message, silently assess whether it relates to the current conv
 **Action:** Answer first, then append once:
 
 ---
-💡 **話題偏移偵測到。** 這個問題跟之前的對話關聯不大，開新對話可以省下不必要的 context 消耗。要清除重來嗎？
+💡 **話題偏移偵測到。** 這個問題跟之前的對話關聯不大，開新對話可以省下不必要的 context 消耗。
+
+要清除目前的 session 重新開始嗎？
+👉 **Yes** — 請手動開新對話，這樣可以節省 context
+👉 **No** — 沒問題，繼續當前對話
 
 ---
 
-Never repeat this more than once per drift event. If the user ignores or declines, drop it entirely.
+If the user replies "Yes": acknowledge it and remind them to manually start a new chat (you cannot clear the session yourself). Say something like: "好的！請手動開一個新對話，這樣可以從乾淨的 context 開始。"
+If the user replies "No" or ignores it: drop it entirely, never bring it up again for this drift event.
 
 ---
 
