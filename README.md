@@ -1,28 +1,62 @@
 # clearcontext
 
-> A lightweight system prompt that detects topic drift and reminds you to start a fresh conversation — saving context window and reducing wasted tokens.
+> A lightweight system prompt that helps you save tokens, reduce wasted context, and get routed to the right AI tool — automatically.
 
-## What it does
+Works with **Claude, ChatGPT, Gemini CLI, Codex, or any LLM** that accepts a system prompt.
 
-When you switch to an unrelated topic mid-conversation, the AI will:
+---
 
-1. Answer your question as normal
-2. Append a short, non-intrusive note suggesting you start a new session
+## Features
 
-It stays silent on minor tangents and follow-ups. It only speaks up when the topic shift is significant enough to matter.
+### 💡 Topic Drift Detection
+When you switch to an unrelated topic mid-conversation, the AI flags it and asks if you want to start fresh — so you're not burning tokens on dead context.
 
-## Why
+### 🤖 Agent Delegation Suggestions
+When your task is better suited for a specialized tool (Codex for repo-level coding, Gemini CLI for live search/large docs), the AI tells you — so you use the right tool for the job.
 
-Long conversations accumulate context that costs tokens and can degrade response quality. Most people don't think to clear their session — `clearcontext` does it for them, automatically.
+### 🌐 Language Efficiency Prompt
+If you're chatting in Chinese, the AI offers a one-time suggestion to respond in English (which uses 20–30% fewer tokens for equivalent content), making your context window go further.
+
+---
+
+## Example Interactions
+
+**Topic drift:**
+> [10 messages debugging a Rust async runtime]
+> User: "hey what's a good recipe for 麻婆豆腐？"
+
+> AI: Here's a classic 麻婆豆腐 recipe: ...
+>
+> 💡 **話題偏移偵測到。** 這個問題跟之前的對話關聯不大，開新對話可以省下不必要的 context 消耗。要清除重來嗎？
+
+---
+
+**Agent delegation:**
+> User: "Can you refactor my entire repo and fix all the linting errors?"
+
+> AI: Here's how I'd approach it...
+>
+> 🤖 **更適合的工具：** 這個任務用 Codex 來做會更有效率，也能省下這裡的 token。要我說明怎麼切換嗎？
+
+---
+
+**Language switch:**
+> User: "幫我解釋一下 transformer 的 attention mechanism"
+
+> AI: [explains attention mechanism]
+>
+> 🌐 **省額度提示：** 您目前用中文對話。英文回覆通常少 20–30% 的 token，可以讓對話撐更久、省更多額度。要切換成英文嗎？（您可以繼續用中文問，我用英文回答就好）
+
+---
 
 ## Usage
 
-### Any LLM chat (ChatGPT, Claude, Gemini, etc.)
-Paste the contents of `system-prompt.txt` into the system prompt field.
+### Claude.ai / Any chat UI
+Paste the contents of `system-prompt.txt` into the custom instructions or system prompt box.
 
 ### Gemini CLI
 ```bash
-# Add to your Gemini CLI system prompt config
+# Append to your Gemini CLI system prompt config
 cat system-prompt.txt >> ~/.gemini/system-prompt.txt
 ```
 
@@ -54,21 +88,16 @@ response = client.messages.create(
 )
 ```
 
-### Claude.ai / Any chat UI
-Just paste `system-prompt.txt` content into the custom instructions or system prompt box.
+---
 
-## Example
+## Design Principles
 
-**Conversation:**
-> [10 messages about debugging a Rust async runtime]
->
-> User: "hey what's a good recipe for 麻婆豆腐"
+- **Answer first, nudge second** — suggestions always come after the actual response
+- **One nudge at a time** — never stacks multiple alerts
+- **Never repeats** — each nudge fires at most once per trigger
+- **Respects your choice** — if you decline, it drops it permanently for that session
 
-**AI response:**
-> Here's a classic 麻婆豆腐 recipe: ...
->
-> ---
-> 💡 **New topic detected.** This looks unrelated to our previous discussion. Starting a new conversation would save context and reduce unnecessary token usage. Want to clear and start fresh?
+---
 
 ## Files
 
@@ -77,43 +106,7 @@ Just paste `system-prompt.txt` content into the custom instructions or system pr
 | `system-prompt.txt` | The prompt — paste this into your tool |
 | `README.md` | This file |
 
-## Prompt
-
-# clearcontext — System Prompt
-
-You are equipped with a topic-drift detection behavior. Follow these rules at all times:
-
-## Core Behavior
-
-After every user message, silently assess whether the new message is related to the current conversation context.
-
-**A message is considered off-topic if:**
-- It introduces a completely new subject unrelated to anything discussed so far
-- It shifts from a technical task to casual conversation (or vice versa) with no bridge
-- It references a new project, codebase, or domain without transitioning naturally
-
-**A message is NOT considered off-topic if:**
-- It's a follow-up, clarification, or tangent within the same domain
-- It's a short acknowledgment ("ok", "thanks", "got it") before continuing
-- The user explicitly says they're switching topics
-
-## When Drift Is Detected
-
-1. **Answer the new question first** — always be helpful
-2. **Then append a short note** at the end, separated by a divider:
-
 ---
-💡 **New topic detected.** This looks unrelated to our previous discussion. Starting a new conversation would save context and reduce unnecessary token usage. Want to clear and start fresh?
-
----
-
-Keep the note brief. Never repeat it more than once per topic switch. If the user says "no" or ignores it, drop it and continue normally.
-
-## Tone
-
-- Non-intrusive: the note is an offer, not a demand
-- Neutral: don't guilt the user, just inform
-- Smart: use judgment — don't trigger on minor tangents
 
 ## License
 
