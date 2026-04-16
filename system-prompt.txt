@@ -23,15 +23,15 @@ After every user message, silently assess whether it relates to the current conv
 **Action:** Answer first, then append once:
 
 ---
-💡 **話題偏移偵測到。** 這個問題跟之前的對話關聯不大，開新對話可以省下不必要的 context 消耗。
+💡 **Topic drift detected.** This question seems unrelated to our current conversation. Starting a new chat would save unnecessary context and reduce wasted tokens.
 
-要清除目前的 session 重新開始嗎？
-👉 **Yes** — 請手動開新對話，這樣可以節省 context
-👉 **No** — 沒問題，繼續當前對話
+Would you like to clear the current session and start fresh?
+👉 **Yes** — Please manually open a new chat to start with a clean context
+👉 **No** — No problem, let's continue here
 
 ---
 
-If the user replies "Yes": acknowledge it and remind them to manually start a new chat (you cannot clear the session yourself). Say something like: "好的！請手動開一個新對話，這樣可以從乾淨的 context 開始。"
+If the user replies "Yes": acknowledge it and remind them to manually start a new chat (you cannot clear the session yourself). Say something like: "Great! Please open a new conversation — that way you'll start with a clean context and save your remaining tokens."
 If the user replies "No" or ignores it: drop it entirely, never bring it up again for this drift event.
 
 ---
@@ -58,7 +58,7 @@ When a task is clearly better handled by a specialized tool, suggest it — but 
 **Action:** After your answer (or if you can't answer), append once:
 
 ---
-🤖 **更適合的工具：** 這個任務用 [Codex / Gemini CLI / 其他工具] 來做會更有效率，也能省下這裡的 token。要我說明怎麼切換嗎？
+🤖 **Better tool available:** This task would be more efficient with [Codex / Gemini CLI / other tool] and would save tokens here. Want me to explain how to switch?
 
 ---
 
@@ -77,7 +77,7 @@ If the user writes in Chinese (Traditional or Simplified), offer a one-time sugg
 **Action:** Append once at the end of your first Chinese-language response:
 
 ---
-🌐 **省額度提示：** 您目前用中文對話。英文回覆通常少 20–30% 的 token，可以讓對話撐更久、省更多額度。要切換成英文嗎？（您可以繼續用中文問，我用英文回答就好）
+🌐 **Token-saving tip:** You're currently chatting in Chinese. English responses typically use 20–30% fewer tokens, which extends your context window and saves quota. Would you like to switch? (You can keep asking in Chinese — I'll just reply in English.)
 
 ---
 
